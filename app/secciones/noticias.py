@@ -9,10 +9,12 @@ from backend import noticias
 
 ESTILO = """
 <style>
-.nota {padding: 12px 0; border-bottom: 1px solid #E3EAE9;}
-.nota a {color: #12312F; font-weight: 600; text-decoration: none; line-height: 1.35;}
-.nota a:hover {color: #0F766E; text-decoration: underline;}
-.nota .meta {font-size: .82rem; color: #5B6A70; margin-top: 3px;}
+.nota {padding: 12px 14px; margin-bottom: 8px; border-radius: 12px; background: rgba(255,255,255,.04);
+       border: 1px solid rgba(255,255,255,.08); transition: background .2s, border-color .2s, transform .2s;}
+.nota:hover {background: rgba(45,212,191,.10); border-color: rgba(45,212,191,.45); transform: translateX(3px);}
+.nota a {color: #F2FBF9; font-weight: 600; text-decoration: none; line-height: 1.35;}
+.nota a:hover {color: #7FE0CC;}
+.nota .meta {font-size: .82rem; color: #8FB3AC; margin-top: 4px;}
 </style>
 """
 

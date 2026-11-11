@@ -21,7 +21,7 @@ from app.secciones import diario as sec_diario  # noqa: E402
 from app.secciones import noticias as sec_noticias  # noqa: E402
 from app.secciones import portada  # noqa: E402
 from app.secciones import portafolio as sec_portafolio  # noqa: E402
-from app.secciones.comunes import GRIS, TEAL, soles  # noqa: E402
+from app.secciones.comunes import FONDO_GRAFICO, GRIS, LINEA, TEAL, TINTA, soles  # noqa: E402
 from backend import archivo, datos_bcrp, diario, portafolio  # noqa: E402
 from backend.motor import (  # noqa: E402
     Deuda,
@@ -45,15 +45,57 @@ st.set_page_config(page_title="Futuro Yo", page_icon="🌱", layout="wide")
 st.markdown(
     """
     <style>
-    .block-container {max-width: 1140px; padding-top: 3.2rem;}
-    .tarjeta {border: 1px solid #DCE4E3; border-radius: 12px; padding: 18px 20px; background: #FFFFFF; margin-bottom: 12px;}
-    .tarjeta.destacada {border: 2px solid #0F766E; background: #F0F9F7;}
-    .stMarkdown p.etiqueta {font-size: .92rem; color: #4C5C62; margin: 0;}
-    .stMarkdown p.numero {font-size: 2.3rem; font-weight: 750; color: #12312F; line-height: 1.15; margin: .15rem 0;}
-    .stMarkdown p.detalle {font-size: .95rem; color: #4C5C62; margin: 0;}
-    .carta {border-left: 4px solid #0F766E; background: #F7FAF9; padding: 16px 22px; border-radius: 0 10px 10px 0;
-            font-size: 1.08rem; line-height: 1.55; color: #1E3236;}
+    /* Fondo de toda la app: luces suaves en movimiento, como la portada */
+    .stApp {background: #061A19;}
+    .stApp::before {content: ""; position: fixed; inset: -25%; z-index: 0; pointer-events: none;
+        background:
+          radial-gradient(38% 32% at 12% 18%, rgba(18,165,148,.34), transparent 70%),
+          radial-gradient(34% 30% at 88% 72%, rgba(46,111,216,.26), transparent 70%),
+          radial-gradient(24% 22% at 58% 38%, rgba(226,179,60,.10), transparent 70%);
+        animation: deriva 34s ease-in-out infinite alternate;}
+    .stApp::after {content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .07;
+        background-image: linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px);
+        background-size: 48px 48px; mask-image: radial-gradient(ellipse at 50% 30%, #000 10%, transparent 70%);}
+    [data-testid="stAppViewContainer"], [data-testid="stHeader"] {background: transparent;}
+    .block-container {max-width: 1140px; padding-top: 3.2rem; position: relative; z-index: 1;}
+    h1, h2, h3 {color: #F2FBF9 !important; letter-spacing: -.01em;}
+
+    /* Pestanas como tarjetas deslizables */
+    [role="tablist"] {gap: 12px; flex-wrap: nowrap; overflow-x: auto; scroll-snap-type: x mandatory;
+        padding: 6px 2px 14px; scrollbar-width: thin; scrollbar-color: rgba(45,212,191,.5) transparent;}
+    [data-baseweb="tab-highlight"], [data-baseweb="tab-border"] {display: none;}
+    [data-testid="stTab"] {flex: 0 0 auto; min-width: 190px; height: auto; scroll-snap-align: start;
+        justify-content: flex-start; padding: 16px 18px; border-radius: 18px;
+        background: linear-gradient(160deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+        border: 1px solid rgba(255,255,255,.12); transition: transform .25s, border-color .25s, box-shadow .25s, background .25s;}
+    [data-testid="stTab"]:hover {transform: translateY(-3px); border-color: rgba(45,212,191,.45);}
+    [data-testid="stTab"][aria-selected="true"] {background: linear-gradient(160deg, rgba(45,212,191,.28), rgba(46,111,216,.16));
+        border-color: rgba(45,212,191,.8); box-shadow: 0 10px 30px rgba(45,212,191,.20);}
+    [data-testid="stTab"] p {font-size: 1rem; font-weight: 650; white-space: nowrap;}
+    [role="tabpanel"] {animation: aparecer .45s ease-out;}
+
+    /* Superficies de vidrio */
+    [data-testid="stMetric"], [data-testid="stPlotlyChart"], [data-testid="stExpander"] details, .tarjeta, .carta {
+        background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.11); border-radius: 16px;
+        backdrop-filter: blur(10px);}
+    [data-testid="stMetric"] {padding: 14px 18px; transition: transform .2s, border-color .2s;}
+    [data-testid="stMetric"]:hover {transform: translateY(-2px); border-color: rgba(45,212,191,.45);}
+    [data-testid="stMetricValue"] {color: #FFFFFF;}
+    [data-testid="stPlotlyChart"] {padding: 6px;}
+    [data-testid="stDataFrame"], [data-testid="stDataEditor"] {border-radius: 12px; overflow: hidden;}
+
+    .tarjeta {padding: 18px 20px; margin-bottom: 12px;}
+    .tarjeta.destacada {border: 1px solid rgba(45,212,191,.7); background: rgba(45,212,191,.12);
+        box-shadow: 0 0 40px rgba(45,212,191,.18);}
+    .stMarkdown p.etiqueta {font-size: .92rem; color: #A9C7C0; margin: 0;}
+    .stMarkdown p.numero {font-size: 2.3rem; font-weight: 750; color: #FFFFFF; line-height: 1.15; margin: .15rem 0;}
+    .stMarkdown p.detalle {font-size: .95rem; color: #A9C7C0; margin: 0;}
+    .carta {border-left: 4px solid #2DD4BF; padding: 16px 22px; font-size: 1.08rem; line-height: 1.55; color: #E6F4F1;}
     .carta p {margin: 0 0 .6rem;}
+
+    @keyframes deriva {from {transform: translate(0,0) scale(1);} to {transform: translate(6%,4%) scale(1.08);}}
+    @keyframes aparecer {from {opacity: 0; transform: translateY(10px);} to {opacity: 1; transform: none;}}
+    @media (prefers-reduced-motion: reduce) {.stApp::before, [role="tabpanel"] {animation: none !important;}}
     </style>
     """,
     unsafe_allow_html=True,
@@ -142,19 +184,20 @@ def grafico_futuro(igual, rescate) -> go.Figure:
         )
         fig.add_annotation(
             x=t.edades[-1], y=t.patrimonio_real[-1], text=t.nombre, showarrow=False,
-            xanchor="left", xshift=8, font={"size": 13, "color": "#33474C"},
+            xanchor="left", xshift=8, font={"size": 13, "color": TINTA},
         )
     fig.update_layout(
         height=350,
         margin={"l": 10, "r": 110, "t": 36, "b": 10},
         hovermode="x unified",
-        plot_bgcolor="#FFFFFF",
-        paper_bgcolor="#FFFFFF",
+        plot_bgcolor=FONDO_GRAFICO,
+        paper_bgcolor=FONDO_GRAFICO,
         legend={"orientation": "h", "y": 1.13, "x": 0},
-        font={"color": "#33474C"},
+        font={"color": TINTA},
+        hoverlabel={"bgcolor": "#0B2726", "font": {"color": "#FFFFFF"}},
     )
-    fig.update_xaxes(title="Edad", showgrid=False, ticksuffix=" años", showline=True, linecolor="#C9D3D2")
-    fig.update_yaxes(title="Patrimonio en soles de hoy", tickprefix="S/ ", tickformat=",.0f", gridcolor="#EAEFEE", zeroline=True, zerolinecolor="#C9D3D2")
+    fig.update_xaxes(title="Edad", showgrid=False, ticksuffix=" años", showline=True, linecolor=LINEA)
+    fig.update_yaxes(title="Patrimonio en soles de hoy", tickprefix="S/ ", tickformat=",.0f", gridcolor=LINEA, zeroline=True, zerolinecolor=LINEA)
     return fig
 
 
@@ -211,7 +254,13 @@ tc_info, tc_en_vivo = tipo_cambio_bcrp()
 caja_portada = st.container()
 caja_archivo = st.container()
 tab_orden, tab_diario, tab_port, tab_futuro, tab_noticias = st.tabs(
-    ["1. Ordena tu dinero", "2. Mi diario", "3. Portafolio", "4. Rescate y tu yo de 65", "5. Noticias de bolsa"]
+    [
+        ":material/account_balance_wallet: Ordena tu dinero",
+        ":material/edit_calendar: Mi diario",
+        ":material/pie_chart: Portafolio",
+        ":material/rocket_launch: Tu yo de 65",
+        ":material/newspaper: Noticias de bolsa",
+    ]
 )
 
 # ---------- 1. Ordena tu dinero ----------

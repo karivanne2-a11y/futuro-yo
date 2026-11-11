@@ -3,9 +3,11 @@ from __future__ import annotations
 
 import plotly.graph_objects as go
 
-TEAL = "#0F766E"
-GRIS = "#6B7780"
-TINTA = "#33474C"
+TEAL = "#2DD4BF"
+GRIS = "#94A7AC"
+TINTA = "#D5E9E4"
+LINEA = "rgba(255,255,255,0.10)"
+FONDO_GRAFICO = "rgba(0,0,0,0)"
 
 MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "setiembre", "octubre", "noviembre", "diciembre"]
 
@@ -38,9 +40,10 @@ def barras_horizontales(etiquetas: list[str], valores: list[float], sufijo: str 
     fig.update_layout(
         height=max(180, 46 * len(etiquetas) + 40),
         margin={"l": 10, "r": 70, "t": 10, "b": 10},
-        plot_bgcolor="#FFFFFF",
-        paper_bgcolor="#FFFFFF",
+        plot_bgcolor=FONDO_GRAFICO,
+        paper_bgcolor=FONDO_GRAFICO,
         font={"color": TINTA},
+        hoverlabel={"bgcolor": "#0B2726", "font": {"color": "#FFFFFF"}},
         bargap=0.35,
     )
     fig.update_xaxes(visible=False)
