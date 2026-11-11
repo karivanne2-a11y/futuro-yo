@@ -4,8 +4,8 @@ from __future__ import annotations
 import pandas as pd
 import streamlit as st
 
-from app.secciones import frases
-from app.secciones.comunes import barras_horizontales, soles
+from interfaz import frases
+from interfaz.comunes import barras_horizontales, soles
 from backend import portafolio
 
 

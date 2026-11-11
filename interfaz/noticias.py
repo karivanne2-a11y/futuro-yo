@@ -5,7 +5,7 @@ import html
 
 import streamlit as st
 
-from app.secciones import frases
+from interfaz import frases
 from backend import noticias
 
 ESTILO = """

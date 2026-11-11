@@ -5,7 +5,7 @@ from datetime import date
 
 import streamlit as st
 
-from app.secciones.comunes import soles
+from interfaz.comunes import soles
 
 ESTILO = """
 <style>

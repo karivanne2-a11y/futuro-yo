@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import streamlit as st
 
-from app.secciones.comunes import soles
+from interfaz.comunes import soles
 
 ESTILO = """
 <style>

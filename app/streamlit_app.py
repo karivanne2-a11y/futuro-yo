@@ -17,11 +17,11 @@ from dotenv import load_dotenv
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from ai.carta import armar_hechos, carta_plantilla, generar_carta, plazo  # noqa: E402
-from app.secciones import diario as sec_diario  # noqa: E402
-from app.secciones import noticias as sec_noticias  # noqa: E402
-from app.secciones import frases, portada  # noqa: E402
-from app.secciones import portafolio as sec_portafolio  # noqa: E402
-from app.secciones.comunes import FONDO_GRAFICO, GRIS, LINEA, TEAL, TINTA, soles  # noqa: E402
+from interfaz import diario as sec_diario  # noqa: E402
+from interfaz import noticias as sec_noticias  # noqa: E402
+from interfaz import frases, portada  # noqa: E402
+from interfaz import portafolio as sec_portafolio  # noqa: E402
+from interfaz.comunes import FONDO_GRAFICO, GRIS, LINEA, TEAL, TINTA, soles  # noqa: E402
 from backend import archivo, datos_bcrp, diario, portafolio  # noqa: E402
 from backend.motor import (  # noqa: E402
     Deuda,

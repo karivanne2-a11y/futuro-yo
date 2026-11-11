@@ -6,8 +6,8 @@ from datetime import date
 import pandas as pd
 import streamlit as st
 
-from app.secciones import frases
-from app.secciones.comunes import barras_horizontales, nombre_mes, soles
+from interfaz import frases
+from interfaz.comunes import barras_horizontales, nombre_mes, soles
 from backend import diario
 from backend.motor import Perfil, valor_futuro_real
 
