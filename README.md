@@ -8,7 +8,7 @@
 
 ## 2. Founder
 
-**[COMPLETAR: tu nombre]**. Economista. Diplomatura Q-Lab PUCP, proyecto final.
+**Karen Macedo**. Economista. Diplomatura Q-Lab PUCP, proyecto final.
 
 [COMPLETAR: en dos líneas, por qué te importa este problema.]
 

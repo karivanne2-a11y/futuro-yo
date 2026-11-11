@@ -2,7 +2,7 @@
 
 Complétalo y publícalo en https://github.com/d2cml-ai/Data-Science-Python/issues/204 antes del martes 10 de noviembre a las 11:59 p. m.
 
-**Nombre:** [COMPLETAR]
+**Nombre:** Karen Macedo
 
 **Startup y one-liner:** Futuro Yo. Ordena tus deudas, ahorros, inversiones y AFP en un solo lugar, y te muestra con cifras adónde te llevan a los 65 años.
 
@@ -10,6 +10,6 @@ Complétalo y publícalo en https://github.com/d2cml-ai/Data-Science-Python/issu
 
 **Link del repo:** https://github.com/karivanne2-a11y/futuro-yo
 
-**Herramientas del curso que usa:** APIs (BCRP), dashboard interactivo y despliegue en Streamlit, LLM con salida estructurada.
+**Herramientas del curso que usa:** APIs (BCRP), dashboard interactivo y despliegue en Streamlit. Opcionalmente, LLM con salida estructurada si se configura una clave.
 
-**Video de respaldo:** [COMPLETAR]
+**Video de respaldo:** se agregará al README antes de la presentación.
