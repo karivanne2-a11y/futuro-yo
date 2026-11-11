@@ -12,4 +12,4 @@ Complétalo y publícalo en https://github.com/d2cml-ai/Data-Science-Python/issu
 
 **Herramientas del curso que usa:** APIs (BCRP), dashboard interactivo y despliegue en Streamlit. Opcionalmente, LLM con salida estructurada si se configura una clave.
 
-**Video de respaldo:** se agregará al README antes de la presentación.
+**Video de respaldo:** https://www.loom.com/share/464f21c442794b64b9726d8429314c07

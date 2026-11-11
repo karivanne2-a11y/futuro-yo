@@ -52,7 +52,7 @@ Los datos no se guardan en el servidor: la persona descarga su archivo y lo vuel
 
 **URL pública:** https://futuroyo.streamlit.app/
 
-**Video de respaldo (60 a 90 s):** [COMPLETAR: enlace]
+**Video de respaldo:** https://www.loom.com/share/464f21c442794b64b9726d8429314c07
 
 | Ordena tu dinero | Rescate y proyección | Carta de tu yo de 65 |
 |---|---|---|
