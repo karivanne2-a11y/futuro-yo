@@ -1,4 +1,8 @@
-# Futuro Yo
+# Futuro Yo, de FINANFUNN’NT
+
+**FINANFUNN’NT** es la startup de finanzas personales detrás de Futuro Yo. Su lema: *las finanzas no son divertidas, pero son inevitables*.
+
+El nombre juega con *finance* y *fun*, y lo niega con *n’t*. No promete que el dinero sea entretenido: reconoce que aprender a manejarlo es obligatorio si queremos tomar buenas decisiones. Por eso la app explica con cifras claras y algo de humor, sin disfrazar lo serio.
 
 > Simulador educativo. No es asesoría financiera, previsional ni de inversión. El perfil del demo es ficticio.
 

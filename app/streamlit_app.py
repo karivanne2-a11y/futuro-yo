@@ -40,7 +40,7 @@ try:
 except Exception:  # En local puede no existir el archivo de secretos.
     pass
 
-st.set_page_config(page_title="Futuro Yo", page_icon="🌱", layout="wide")
+st.set_page_config(page_title="Futuro Yo · FINANFUNN’NT", page_icon="🌱", layout="wide")
 
 st.markdown(
     """

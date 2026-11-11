@@ -32,6 +32,10 @@ ESTILO = """
 .hero .chip b {display: block; font-size: clamp(1.4rem, 2.6vw, 2rem); font-weight: 750; color: #FFFFFF; margin-top: 4px;}
 .hero .chip.luz {background: rgba(127,224,204,.18); border-color: rgba(127,224,204,.55);}
 .hero .pie {margin: 18px 0 0; font-size: .82rem; color: #9DBDB6;}
+.hero .marca {display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin: 0 0 22px; animation: subir .7s ease-out both;}
+.hero .logo {font-size: 1.15rem; font-weight: 800; letter-spacing: .06em; color: #FFFFFF;
+       padding: 6px 12px; border-radius: 10px; background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.22);}
+.hero .lema {font-size: .95rem; color: #F7E7B4; font-style: italic;}
 @keyframes flotar1 {from {transform: translate(0,0) scale(1);} to {transform: translate(120px,60px) scale(1.15);}}
 @keyframes flotar2 {from {transform: translate(0,0) scale(1.1);} to {transform: translate(-140px,-50px) scale(.95);}}
 @keyframes subir {from {opacity: 0; transform: translateY(18px);} to {opacity: 1; transform: none;}}
@@ -48,6 +52,7 @@ def mostrar(patrimonio_hoy: float, igual_65: float, plan_65: float) -> None:
         + f"""
 <section class="hero">
   <div class="aurora a1"></div><div class="aurora a2"></div><div class="aurora a3"></div><div class="rejilla"></div>
+  <div class="marca"><span class="logo">FINANFUNN’NT</span><span class="lema">Las finanzas no son divertidas. Pero son inevitables.</span></div>
   <p class="kicker">FUTURO YO</p>
   <div class="titular">Tu yo de 65 ya está viviendo <em>lo que decides hoy</em>.</div>
   <p class="bajada">Registra tu día, ordena tus deudas e inversiones, sigue la bolsa y mira en soles de hoy adónde te llevan.</p>
