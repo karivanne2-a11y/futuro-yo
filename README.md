@@ -14,17 +14,19 @@ El nombre juega con *finance* y *fun*, y lo niega con *n’t*. No promete que el
 
 **Karen Macedo**. Economista. Diplomatura Q-Lab PUCP, proyecto final.
 
-[COMPLETAR: en dos líneas, por qué te importa este problema.]
+Como economista, veo que muchas personas deciden sobre su dinero mirando solo la cuota o el gasto del mes. Quise una herramienta que muestre ese efecto en lo que tendrán a los 65 años.
 
 ## 3. Problema
 
 Quien tiene una tarjeta, un préstamo, algo de ahorro y un fondo de AFP ve cada cosa en una app distinta. Nadie le muestra cuánto le cuesta hoy su deuda en términos de su vida a los 65.
 
-**Tres conversaciones reales** (notas en [`docs/research/`](docs/research/)):
+**Tres conversaciones reales** por WhatsApp, el 11 de noviembre de 2026 (notas anónimas y [análisis](docs/research/analisis.md) en [`docs/research/`](docs/research/)):
 
-- [COMPLETAR: conversación 1, qué descubriste]
-- [COMPLETAR: conversación 2, qué descubriste]
-- [COMPLETAR: conversación 3, qué descubriste]
+- **Persona A:** *"no se que hacer con mi dinero solo paro gastando"*. Necesita orden antes que proyecciones.
+- **Persona B, 30 años, con un hijo y préstamos:** *"no se en cuanto tiempo podria pagarlos"*. Necesita una fecha clara para salir de deudas.
+- **Persona C, 27 años, en planilla:** quiere invertir o ahorrar, pero *"paro gastando y no se donde se va mi dinero"*. Pide entender noticias y rentabilidad.
+
+**Patrón:** dos de tres no saben adónde se va su dinero. Por eso Futuro Yo empieza por registrar el día a día y usa la proyección a los 65 como motivación. **Límite:** fueron respuestas breves de personas cercanas, sin uso de la app ni preguntas sobre precio, así que el modelo de negocio sigue sin validar.
 
 ## 4. Solución e insight
 
@@ -135,7 +137,7 @@ Las skills calculan las cifras con el mismo código de la app y Claude solo reda
 
 Claude Code ayudó a investigar datos y normas, escribió la primera versión del motor, la app, las pruebas y este README, y probó la app en navegador. Durante esas pruebas detectó y corrigió un error: el rescate invertía dinero aunque la persona tuviera déficit.
 
-[COMPLETAR: qué decidiste, cambiaste o verificaste tú.]
+Elegí el problema entre más de 40 ideas evaluadas y decidí combinar la planificación del retiro con un plan para salir de deudas. Pedí sumar el diario, el portafolio, las noticias y el diseño, y definí la marca FINANFUNN’NT. Hice las tres conversaciones, publiqué el repositorio con GitHub Desktop, desplegué la demo en Streamlit Community Cloud y grabé el video.
 
 ## Licencia
 
