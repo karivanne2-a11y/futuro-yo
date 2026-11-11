@@ -1,10 +1,11 @@
-"""Futuro Yo: ordena tus deudas e inversiones y mira adonde te llevan a los 65."""
+"""Futuro Yo: registra tu dia, ordena deudas e inversiones y mira adonde te llevan a los 65."""
 from __future__ import annotations
 
 import json
 import os
 import sys
 from dataclasses import replace
+from datetime import date
 from pathlib import Path
 
 import pandas as pd
@@ -15,8 +16,13 @@ from dotenv import load_dotenv
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from ai.carta import armar_hechos, carta_plantilla, generar_carta, plazo, soles  # noqa: E402
-from backend import datos_bcrp  # noqa: E402
+from ai.carta import armar_hechos, carta_plantilla, generar_carta, plazo  # noqa: E402
+from app.secciones import diario as sec_diario  # noqa: E402
+from app.secciones import noticias as sec_noticias  # noqa: E402
+from app.secciones import portada  # noqa: E402
+from app.secciones import portafolio as sec_portafolio  # noqa: E402
+from app.secciones.comunes import GRIS, TEAL, soles  # noqa: E402
+from backend import archivo, datos_bcrp, diario, portafolio  # noqa: E402
 from backend.motor import (  # noqa: E402
     Deuda,
     Inversion,
@@ -36,21 +42,15 @@ except Exception:  # En local puede no existir el archivo de secretos.
 
 st.set_page_config(page_title="Futuro Yo", page_icon="🌱", layout="wide")
 
-COLOR_IGUAL = "#6B7780"
-COLOR_RESCATE = "#0F766E"
-
 st.markdown(
     """
     <style>
-    .block-container {max-width: 1120px; padding-top: 4.5rem;}
-    .stMarkdown p.marca {font-size: 2.8rem; font-weight: 750; letter-spacing: -.02em; line-height: 1.1; margin: 0; color: #12312F;}
-    .stMarkdown p.lema {font-size: 1.15rem; color: #44545A; margin: .2rem 0 .4rem;}
-    .stMarkdown p.aviso {font-size: .86rem; color: #5B6A70;}
-    .tarjeta {border: 1px solid #DCE4E3; border-radius: 12px; padding: 18px 20px; background: #FFFFFF;}
+    .block-container {max-width: 1140px; padding-top: 3.2rem;}
+    .tarjeta {border: 1px solid #DCE4E3; border-radius: 12px; padding: 18px 20px; background: #FFFFFF; margin-bottom: 12px;}
     .tarjeta.destacada {border: 2px solid #0F766E; background: #F0F9F7;}
-    .etiqueta {font-size: .9rem; color: #4C5C62; margin: 0;}
-    .stMarkdown p.numero {font-size: 2.4rem; font-weight: 750; color: #12312F; line-height: 1.15; margin: .15rem 0;}
-    .detalle {font-size: .95rem; color: #4C5C62; margin: 0;}
+    .stMarkdown p.etiqueta {font-size: .92rem; color: #4C5C62; margin: 0;}
+    .stMarkdown p.numero {font-size: 2.3rem; font-weight: 750; color: #12312F; line-height: 1.15; margin: .15rem 0;}
+    .stMarkdown p.detalle {font-size: .95rem; color: #4C5C62; margin: 0;}
     .carta {border-left: 4px solid #0F766E; background: #F7FAF9; padding: 16px 22px; border-radius: 0 10px 10px 0;
             font-size: 1.08rem; line-height: 1.55; color: #1E3236;}
     .carta p {margin: 0 0 .6rem;}
@@ -63,6 +63,11 @@ st.markdown(
 @st.cache_data(ttl=86400, show_spinner="Consultando al BCRP...")
 def inflacion_bcrp() -> tuple[dict, bool]:
     return datos_bcrp.obtener()
+
+
+@st.cache_data(ttl=21600, show_spinner=False)
+def tipo_cambio_bcrp() -> tuple[dict, bool]:
+    return datos_bcrp.obtener_tipo_cambio()
 
 
 def tablas_ejemplo() -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -80,6 +85,7 @@ def tablas_ejemplo() -> tuple[pd.DataFrame, pd.DataFrame]:
 
 
 def numero(valor, defecto: float = 0.0) -> float:
+    valor = pd.to_numeric(valor, errors="coerce")
     return defecto if pd.isna(valor) else float(valor)
 
 
@@ -125,7 +131,7 @@ def tarjeta(etiqueta: str, valor: str, detalle: str, destacada: bool = False) ->
 
 def grafico_futuro(igual, rescate) -> go.Figure:
     fig = go.Figure()
-    for t, color in ((igual, COLOR_IGUAL), (rescate, COLOR_RESCATE)):
+    for t, color in ((igual, GRIS), (rescate, TEAL)):
         fig.add_scatter(
             x=t.edades,
             y=t.patrimonio_real,
@@ -135,13 +141,8 @@ def grafico_futuro(igual, rescate) -> go.Figure:
             hovertemplate="S/ %{y:,.0f}",
         )
         fig.add_annotation(
-            x=t.edades[-1],
-            y=t.patrimonio_real[-1],
-            text=t.nombre,
-            showarrow=False,
-            xanchor="left",
-            xshift=8,
-            font={"size": 13, "color": "#33474C"},
+            x=t.edades[-1], y=t.patrimonio_real[-1], text=t.nombre, showarrow=False,
+            xanchor="left", xshift=8, font={"size": 13, "color": "#33474C"},
         )
     fig.update_layout(
         height=350,
@@ -182,50 +183,64 @@ def boton_voz(texto: str) -> None:
     )
 
 
-# ---------- Encabezado ----------
+def reiniciar(datos: dict | None) -> None:
+    """Carga un archivo (o vuelve al ejemplo) y redibuja todo desde cero."""
+    st.session_state["cargado"] = datos
+    for clave in ("diario", "portafolio", "carta_ia"):
+        st.session_state.pop(clave, None)
+    st.session_state.version += 1
+    st.rerun()
+
+
+# ---------- Estado inicial ----------
 if "version" not in st.session_state:
     st.session_state.version = 0
 v = st.session_state.version
+cargado = st.session_state.get("cargado") or {}
+pdef, tdef = cargado.get("perfil", {}), cargado.get("tablas", {})
+ejemplo = perfil_ejemplo()
 
-st.markdown('<p class="marca">Futuro Yo</p>', unsafe_allow_html=True)
-st.markdown(
-    '<p class="lema">Ordena tus deudas, ahorros e inversiones, y mira adónde te llevan a los 65 años.</p>',
-    unsafe_allow_html=True,
-)
-st.markdown(
-    '<p class="aviso">Simulador educativo: no es asesoría financiera, previsional ni de inversión. '
-    "Tus datos solo viven en esta sesión y no se guardan. El ejemplo cargado es una persona ficticia.</p>",
-    unsafe_allow_html=True,
-)
+if "diario" not in st.session_state:
+    st.session_state["diario"] = diario.limpiar(tdef["diario"]) if "diario" in tdef else diario.ejemplo()
+if "portafolio" not in st.session_state:
+    st.session_state["portafolio"] = portafolio.limpiar(tdef["portafolio"]) if "portafolio" in tdef else portafolio.ejemplo()
 
 bcrp, en_vivo = inflacion_bcrp()
-tab_orden, tab_futuro = st.tabs(["1. Ordena tu dinero", "2. Rescate y tu yo de 65"])
+tc_info, tc_en_vivo = tipo_cambio_bcrp()
 
-# ---------- Paso 1: datos ----------
+caja_portada = st.container()
+caja_archivo = st.container()
+tab_orden, tab_diario, tab_port, tab_futuro, tab_noticias = st.tabs(
+    ["1. Ordena tu dinero", "2. Mi diario", "3. Portafolio", "4. Rescate y tu yo de 65", "5. Noticias de bolsa"]
+)
+
+# ---------- 1. Ordena tu dinero ----------
 with tab_orden:
-    ejemplo = perfil_ejemplo()
     izquierda, derecha = st.columns([1, 2.1], gap="large")
 
     with izquierda:
         st.subheader("Tú hoy")
-        edad = st.number_input("Edad", 18, 64, ejemplo.edad, key=f"edad{v}")
-        sueldo = st.number_input("Sueldo bruto mensual (S/)", 0, 200000, int(ejemplo.sueldo_bruto), 100, key=f"sueldo{v}")
-        neto = st.number_input("Ingreso neto mensual (S/)", 0, 200000, int(ejemplo.ingreso_neto), 100, key=f"neto{v}")
-        gastos = st.number_input("Gastos mensuales sin cuotas (S/)", 0, 200000, int(ejemplo.gastos), 100, key=f"gastos{v}")
-        saldo_afp = st.number_input("Saldo en tu AFP (S/)", 0, 5000000, int(ejemplo.saldo_afp), 500, key=f"afp{v}")
+        edad = st.number_input("Edad", 18, 64, int(pdef.get("edad", ejemplo.edad)), key=f"edad{v}")
+        sueldo = st.number_input("Sueldo bruto mensual (S/)", 0, 200000, int(pdef.get("sueldo_bruto", ejemplo.sueldo_bruto)), 100, key=f"sueldo{v}")
+        neto = st.number_input("Ingreso neto mensual (S/)", 0, 200000, int(pdef.get("ingreso_neto", ejemplo.ingreso_neto)), 100, key=f"neto{v}")
+        gastos = st.number_input("Gastos mensuales sin cuotas (S/)", 0, 200000, int(pdef.get("gastos", ejemplo.gastos)), 100, key=f"gastos{v}")
+        saldo_afp = st.number_input("Saldo en tu AFP (S/)", 0, 5000000, int(pdef.get("saldo_afp", ejemplo.saldo_afp)), 500, key=f"afp{v}")
         densidad = st.slider(
-            "Parte del tiempo en que aportas a tu AFP (%)", 0, 100, int(ejemplo.densidad_aportes), 5, key=f"dens{v}",
-            help="Si pasas temporadas sin empleo formal, tus aportes se interrumpen.",
+            "Parte del tiempo en que aportas a tu AFP (%)", 0, 100, int(pdef.get("densidad_aportes", ejemplo.densidad_aportes)), 5,
+            key=f"dens{v}", help="Si pasas temporadas sin empleo formal, tus aportes se interrumpen.",
         )
-        if st.button("Restaurar ejemplo"):
-            st.session_state.version += 1
-            st.rerun()
+        if st.button("Volver al ejemplo"):
+            reiniciar(None)
 
     with derecha:
         deudas_base, inversiones_base = tablas_ejemplo()
+        if "deudas" in tdef:
+            deudas_base = tdef["deudas"].reindex(columns=deudas_base.columns)
+        if "inversiones" in tdef:
+            inversiones_base = tdef["inversiones"].reindex(columns=inversiones_base.columns)
         st.subheader("Lo que debes")
         tabla_deudas = st.data_editor(
-            deudas_base, num_rows="dynamic", hide_index=True, use_container_width=True, key=f"t_deudas{v}",
+            deudas_base, num_rows="dynamic", hide_index=True, width="stretch", key=f"t_deudas{v}",
             column_config={
                 "Saldo (S/)": st.column_config.NumberColumn(min_value=0, format="%.0f"),
                 "TCEA (%)": st.column_config.NumberColumn(min_value=0, max_value=200, format="%.1f"),
@@ -234,13 +249,14 @@ with tab_orden:
         )
         st.subheader("Lo que tienes")
         tabla_inversiones = st.data_editor(
-            inversiones_base, num_rows="dynamic", hide_index=True, use_container_width=True, key=f"t_inv{v}",
+            inversiones_base, num_rows="dynamic", hide_index=True, width="stretch", key=f"t_inv{v}",
             column_config={
                 "Saldo (S/)": st.column_config.NumberColumn(min_value=0, format="%.0f"),
                 "Aporte mensual (S/)": st.column_config.NumberColumn(min_value=0, format="%.0f"),
                 "Retorno anual (%)": st.column_config.NumberColumn(min_value=-20, max_value=30, format="%.1f"),
             },
         )
+        st.caption("Aquí van tus ahorros e inversiones con el retorno que supones para proyectar. El detalle de cada inversión va en Portafolio.")
 
     with st.expander("Supuestos de la proyección"):
         origen = "consultado ahora" if en_vivo else "copia guardada"
@@ -252,10 +268,12 @@ with tab_orden:
         else:
             st.caption("No se pudo leer el BCRP: se usa una inflación supuesta de 2.5 %.")
         c1, c2, c3, c4 = st.columns(4)
-        inflacion = c1.number_input("Inflación anual (%)", 0.0, 20.0, float(bcrp["promedio_10_anos"]), 0.1, key=f"inf{v}")
-        alza = c2.number_input("Alza anual de sueldo (%)", 0.0, 20.0, float(bcrp["promedio_10_anos"]), 0.1, key=f"alza{v}")
-        retorno_afp = c3.number_input("Retorno anual AFP (%)", -5.0, 20.0, ejemplo.retorno_afp, 0.1, key=f"rafp{v}")
-        retorno_rescate = c4.number_input("Retorno del dinero liberado (%)", -5.0, 20.0, ejemplo.retorno_rescate, 0.1, key=f"rres{v}")
+        inflacion = c1.number_input("Inflación anual (%)", 0.0, 20.0, float(pdef.get("inflacion", bcrp["promedio_10_anos"])), 0.1, key=f"inf{v}")
+        alza = c2.number_input("Alza anual de sueldo (%)", 0.0, 20.0, float(pdef.get("alza_sueldo", bcrp["promedio_10_anos"])), 0.1, key=f"alza{v}")
+        retorno_afp = c3.number_input("Retorno anual AFP (%)", -5.0, 20.0, float(pdef.get("retorno_afp", ejemplo.retorno_afp)), 0.1, key=f"rafp{v}")
+        retorno_rescate = c4.number_input(
+            "Retorno del dinero liberado (%)", -5.0, 20.0, float(pdef.get("retorno_rescate", ejemplo.retorno_rescate)), 0.1, key=f"rres{v}"
+        )
         st.caption("Los retornos son supuestos que tú puedes cambiar. No son predicciones ni rentabilidades ofrecidas por nadie.")
 
     perfil = Perfil(
@@ -281,7 +299,15 @@ with tab_orden:
     m3.metric("Sueldo que va a cuotas", f"{foto.carga_deuda_pct:.0f} %")
     m4.metric("Te queda libre al mes", soles(foto.flujo_libre))
 
-# ---------- Paso 2: rescate y futuro ----------
+# ---------- 2. Mi diario ----------
+with tab_diario:
+    tabla_diario = sec_diario.mostrar(perfil)
+
+# ---------- 3. Portafolio ----------
+with tab_port:
+    tabla_portafolio = sec_portafolio.mostrar(tc_info, tc_en_vivo)
+
+# ---------- 4. Rescate y tu yo de 65 ----------
 with tab_futuro:
     maximo = max(int(foto.flujo_libre), 0)
     clave_extra = f"extra{v}"
@@ -324,7 +350,7 @@ with tab_futuro:
         "El rescate supone que, al terminar las deudas, sigues apartando ese dinero en lugar de gastarlo. No es una pensión oficial."
     )
 
-    st.plotly_chart(grafico_futuro(igual, rescate), use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(grafico_futuro(igual, rescate), width="stretch", config={"displayModeBar": False})
 
     d1, d2, d3 = st.columns(3)
     d1.metric("Libre de deudas si sigues igual", plazo(igual.meses_sin_deuda))
@@ -344,9 +370,8 @@ with tab_futuro:
     guardada = st.session_state.get("carta_ia")
     if guardada and guardada["hechos"] == hechos:
         resultado = guardada["resultado"]
-        carta, nota = resultado.carta, (
-            "Redactada con IA. Todas las cifras vienen del simulador." if resultado.origen == "ia" else resultado.nota + " Se muestra la versión sin IA."
-        )
+        carta = resultado.carta
+        nota = "Redactada con IA. Todas las cifras vienen del simulador." if resultado.origen == "ia" else resultado.nota + " Se muestra la versión sin IA."
     else:
         carta, nota = carta_plantilla(hechos), "Escrita con tus cifras, sin IA."
 
@@ -377,5 +402,38 @@ with tab_futuro:
                 }
             ),
             hide_index=True,
-            use_container_width=True,
+            width="stretch",
         )
+
+# ---------- 5. Noticias ----------
+with tab_noticias:
+    sec_noticias.mostrar()
+
+# ---------- Portada y archivo (se dibujan arriba, con las cifras ya calculadas) ----------
+with caja_portada:
+    portada.mostrar(foto.patrimonio_neto, igual.patrimonio_final_real, rescate.patrimonio_final_real)
+
+with caja_archivo:
+    with st.expander("Guarda o abre tu archivo personal"):
+        g1, g2 = st.columns(2, gap="large")
+        datos_perfil = {
+            "edad": perfil.edad, "sueldo_bruto": perfil.sueldo_bruto, "ingreso_neto": perfil.ingreso_neto,
+            "gastos": perfil.gastos, "saldo_afp": perfil.saldo_afp, "densidad_aportes": perfil.densidad_aportes,
+            "inflacion": perfil.inflacion, "alza_sueldo": perfil.alza_sueldo,
+            "retorno_afp": perfil.retorno_afp, "retorno_rescate": perfil.retorno_rescate,
+        }
+        tablas = {"deudas": tabla_deudas, "inversiones": tabla_inversiones, "diario": tabla_diario, "portafolio": tabla_portafolio}
+        g1.download_button(
+            "Descargar mi archivo",
+            data=archivo.guardar(datos_perfil, tablas),
+            file_name=f"futuro-yo-{date.today().isoformat()}.json",
+            mime="application/json",
+            type="primary",
+        )
+        g1.caption("Tus datos no se guardan en el servidor. Descarga tu archivo y súbelo otro día para continuar.")
+        subido = g2.file_uploader("Abrir un archivo guardado", type=["json"], key=f"subir{v}")
+    if subido is not None:
+        try:
+            reiniciar(archivo.abrir(subido.getvalue()))
+        except ValueError as error:
+            st.error(str(error))

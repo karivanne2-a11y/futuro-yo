@@ -76,6 +76,15 @@ def ingreso_mensual_equivalente(fondo_real: float, anos: int, retorno_real_pct: 
     return fondo_real * i / (1 - (1 + i) ** -n)
 
 
+def valor_futuro_real(aporte_mensual: float, meses: int, retorno_pct: float, inflacion_pct: float) -> float:
+    """Valor en soles de hoy de apartar el mismo monto cada mes durante `meses`."""
+    if meses <= 0:
+        return 0.0
+    i = tasa_mensual(retorno_pct)
+    nominal = aporte_mensual * meses if abs(i) < 1e-12 else aporte_mensual * ((1 + i) ** meses - 1) / i
+    return nominal / (1 + tasa_mensual(inflacion_pct)) ** meses
+
+
 def simular(perfil: Perfil, rescate: bool = False, extra: float = 0.0) -> Trayectoria:
     """Proyecta el patrimonio hasta la edad de retiro.
 

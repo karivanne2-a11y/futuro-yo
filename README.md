@@ -26,6 +26,16 @@ Quien tiene una tarjeta, un préstamo, algo de ahorro y un fondo de AFP ve cada 
 
 La persona registra lo que debe y lo que tiene. Futuro Yo calcula su situación actual, simula un plan para salir de deudas y proyecta dos caminos hasta los 65 años en soles de hoy. Al final recibe una carta de su yo de 65, que también puede escuchar.
 
+La app tiene cinco secciones:
+
+1. **Ordena tu dinero:** deudas, ahorros, AFP y supuestos.
+2. **Mi diario:** registro diario de ingresos, gastos, inversiones y pagos de deuda, con resumen del mes, gastos pequeños y lo que valdría ese ahorro a los 65.
+3. **Portafolio:** inversiones realizadas en soles o dólares, con valor actual, ganancia, pesos y observaciones neutrales. El tipo de cambio viene del BCRP.
+4. **Rescate y tu yo de 65:** proyección, plan para salir de deudas y carta.
+5. **Noticias de bolsa:** titulares de Perú e internacionales con enlace a la fuente.
+
+Los datos no se guardan en el servidor: la persona descarga su archivo y lo vuelve a abrir otro día.
+
 **Insight:** una deuda se siente como una cuota de este mes. Cambiamos cómo se decide cuando esa cuota se traduce en el ingreso que tendrás a los 65.
 
 ## 5. Why now
@@ -49,8 +59,14 @@ La persona registra lo que debe y lo que tiene. Futuro Yo calcula su situación 
 ```mermaid
 flowchart LR
     U[Persona] --> A[App Streamlit]
-    B[API del BCRP: inflación] --> D[backend/datos_bcrp.py]
+    B[API del BCRP: inflación y tipo de cambio] --> D[backend/datos_bcrp.py]
     D --> A
+    R[RSS de Gestión, El Comercio, Andina, CNBC, MarketWatch e Investing.com] --> N[backend/noticias.py]
+    N --> A
+    A --> F[backend/diario.py y backend/portafolio.py]
+    F --> A
+    A <--> J[Archivo JSON de la persona]
+    J --> K[Skills de Claude en .claude/skills]
     A --> M[backend/motor.py: cálculo mes a mes]
     M --> A
     M --> H[ai/carta.py: solo cifras agregadas]
@@ -105,7 +121,11 @@ Precios por validar.
 |---|---|---|
 | APIs: BCRP en vivo con copia de respaldo | 03 | [`backend/datos_bcrp.py`](backend/datos_bcrp.py) |
 | Dashboard interactivo y despliegue | 05 y 12 | [`app/streamlit_app.py`](app/streamlit_app.py) |
+| Titulares de bolsa desde RSS públicos | 03 | [`backend/noticias.py`](backend/noticias.py) |
 | LLM con salida estructurada y evaluación de cifras | 08 | [`ai/carta.py`](ai/carta.py), activa con clave de API |
+| Skills de Claude: resumen mensual, revisión de portafolio y pulso de la bolsa | 16 | [`.claude/skills/`](.claude/skills/), usan el archivo que exporta la app |
+
+Las skills calculan las cifras con el mismo código de la app y Claude solo redacta. Ninguna recomienda comprar o vender. Se usan con Claude Code abriendo este repositorio, por ejemplo: "usa la skill resumen-mensual con mi archivo futuro-yo.json".
 
 ## 9. Qué hizo el agente
 

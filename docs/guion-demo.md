@@ -4,11 +4,12 @@
 
 **0:30 a 2:30, demo en vivo.**
 
-1. Pestaña 1: muestra las deudas, lo que tiene la persona ficticia y cuánto del sueldo se va en cuotas.
-2. Pestaña 2: mueve el pago extra de S/ 0 a S/ 150 y señala cómo cambian las dos cifras a los 65.
-3. Señala cuándo queda libre de deudas y cuántos intereses evita.
-4. Baja a la carta y presiona "Escuchar a mi yo de 65".
-5. Di: "Las cifras no las inventa una IA. Salen de un motor con pruebas y de la inflación del BCRP".
+1. Portada: lee el titular y las tres cifras.
+2. Mi diario: registra un gasto en vivo y muestra cuánto valdría el ahorro del mes a los 65.
+3. Portafolio: muestra el valor en soles con el tipo de cambio del BCRP y la observación de concentración.
+4. Rescate y tu yo de 65: mueve el pago extra de S/ 0 a S/ 150 y señala cómo cambian las cifras. Presiona "Escuchar a mi yo de 65".
+5. Noticias: muestra un titular de Perú y uno internacional.
+6. Di: "Las cifras no las inventa una IA. Salen de un motor con 46 pruebas y de datos del BCRP".
 
 **2:30 a 3:00, negocio.** "Es gratis para personas. Lo pagan empleadores, a S/ 9 por colaborador al mes, y entidades financieras con su marca. [Lo que te dijeron sobre pagar]".
 
