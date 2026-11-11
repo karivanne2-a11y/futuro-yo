@@ -4,6 +4,7 @@ from __future__ import annotations
 import pandas as pd
 import streamlit as st
 
+from app.secciones import frases
 from app.secciones.comunes import barras_horizontales, soles
 from backend import portafolio
 
@@ -39,6 +40,7 @@ def mostrar(tipo_cambio: dict, en_vivo: bool) -> pd.DataFrame:
     m2.metric("Invertido", soles(r["invertido"]))
     m3.metric("Ganancia o pérdida", soles(r["ganancia"]))
     m4.metric("Rentabilidad simple", f"{r['rentabilidad']:.1f} %", help="Ganancia sobre lo invertido. No está anualizada.")
+    frases.mostrar(*frases.del_portafolio(r))
 
     if r["posiciones"]:
         d = portafolio.detalle(editado, tc)

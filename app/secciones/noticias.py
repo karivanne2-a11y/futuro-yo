@@ -5,6 +5,7 @@ import html
 
 import streamlit as st
 
+from app.secciones import frases
 from backend import noticias
 
 ESTILO = """
@@ -38,6 +39,7 @@ def _tarjeta(n: dict) -> str:
 
 def mostrar() -> None:
     st.markdown(ESTILO, unsafe_allow_html=True)
+    frases.mostrar(*frases.NOTICIAS)
     arriba_izq, arriba_der = st.columns([3, 1])
     solo_mercado = arriba_izq.toggle("Solo bolsa, tasas, dólar y materias primas", value=True)
     if arriba_der.button("Actualizar titulares"):
@@ -49,7 +51,7 @@ def mostrar() -> None:
         return
 
     peru, mundo = st.columns(2, gap="large")
-    for columna, region, titulo in ((peru, "Perú", "Perú"), (mundo, "Internacional", "Internacional (en inglés)")):
+    for columna, region, titulo in ((peru, "Perú", "Perú"), (mundo, "Internacional", "Internacional")):
         with columna:
             st.subheader(titulo)
             elegidas = [n for n in lista if n["region"] == region and (n["mercado"] or not solo_mercado)][:12]

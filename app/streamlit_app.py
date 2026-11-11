@@ -19,7 +19,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from ai.carta import armar_hechos, carta_plantilla, generar_carta, plazo  # noqa: E402
 from app.secciones import diario as sec_diario  # noqa: E402
 from app.secciones import noticias as sec_noticias  # noqa: E402
-from app.secciones import portada  # noqa: E402
+from app.secciones import frases, portada  # noqa: E402
 from app.secciones import portafolio as sec_portafolio  # noqa: E402
 from app.secciones.comunes import FONDO_GRAFICO, GRIS, LINEA, TEAL, TINTA, soles  # noqa: E402
 from backend import archivo, datos_bcrp, diario, portafolio  # noqa: E402
@@ -398,6 +398,7 @@ with tab_futuro:
         f"En soles de hoy. Si los retornos fueran 2 puntos menores o mayores, el rescate daría entre {soles(bajo)} y {soles(alto)}. "
         "El rescate supone que, al terminar las deudas, sigues apartando ese dinero en lugar de gastarlo. No es una pensión oficial."
     )
+    frases.mostrar(*frases.del_futuro(igual.patrimonio_final_real, rescate.patrimonio_final_real))
 
     st.plotly_chart(grafico_futuro(igual, rescate), width="stretch", config={"displayModeBar": False})
 
@@ -461,6 +462,7 @@ with tab_noticias:
 # ---------- Portada y archivo (se dibujan arriba, con las cifras ya calculadas) ----------
 with caja_portada:
     portada.mostrar(foto.patrimonio_neto, igual.patrimonio_final_real, rescate.patrimonio_final_real)
+    frases.mostrar(*frases.del_dia())
 
 with caja_archivo:
     with st.expander("Guarda o abre tu archivo personal"):

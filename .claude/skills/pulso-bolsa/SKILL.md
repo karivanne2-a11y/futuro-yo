@@ -18,5 +18,5 @@ description: Resume en español los titulares recientes de economía y bolsa de 
 ## Reglas
 - Resume solo lo que dicen los titulares. No inventes cifras ni causas.
 - No hagas predicciones ni recomiendes productos.
-- Traduce al español los titulares internacionales y deja el enlace original.
+- Todas las fuentes publican en español.
 - Si alguna fuente no respondió, menciónalo.

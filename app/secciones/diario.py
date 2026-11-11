@@ -6,6 +6,7 @@ from datetime import date
 import pandas as pd
 import streamlit as st
 
+from app.secciones import frases
 from app.secciones.comunes import barras_horizontales, nombre_mes, soles
 from backend import diario
 from backend.motor import Perfil, valor_futuro_real
@@ -74,6 +75,7 @@ def _resumen(tabla: pd.DataFrame, perfil: Perfil) -> None:
     m2.metric("Gastos", soles(r["gastos"]))
     m3.metric("Pagos de deuda", soles(r["pagos_deuda"]))
     m4.metric("Invertido", soles(r["invertido"]))
+    frases.mostrar(*frases.del_diario(r, diario.gastos_pequenos(tabla, mes)))
 
     izquierda, derecha = st.columns([1.3, 1], gap="large")
     with izquierda:

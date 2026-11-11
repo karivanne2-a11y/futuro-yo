@@ -61,7 +61,7 @@ flowchart LR
     U[Persona] --> A[App Streamlit]
     B[API del BCRP: inflación y tipo de cambio] --> D[backend/datos_bcrp.py]
     D --> A
-    R[RSS de Gestión, El Comercio, Andina, CNBC, MarketWatch e Investing.com] --> N[backend/noticias.py]
+    R[RSS en español: Gestión, El Comercio, Andina, Investing.com, Expansión, El País y DW] --> N[backend/noticias.py]
     N --> A
     A --> F[backend/diario.py y backend/portafolio.py]
     F --> A

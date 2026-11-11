@@ -17,9 +17,10 @@ FUENTES = [
     ("Gestión", "Perú", "https://gestion.pe/arc/outboundfeeds/rss/category/economia/?outputType=xml"),
     ("El Comercio", "Perú", "https://elcomercio.pe/arc/outboundfeeds/rss/category/economia/?outputType=xml"),
     ("Andina", "Perú", "https://andina.pe/agencia/rss/3.xml"),
-    ("CNBC Markets", "Internacional", "https://www.cnbc.com/id/15839069/device/rss/rss.html"),
-    ("MarketWatch", "Internacional", "https://feeds.content.dowjones.io/public/rss/mw_topstories"),
-    ("Investing.com", "Internacional", "https://www.investing.com/rss/news_25.rss"),
+    ("Investing.com en español", "Internacional", "https://es.investing.com/rss/news_25.rss"),
+    ("Expansión", "Internacional", "https://e00-expansion.uecdn.es/rss/mercados.xml"),
+    ("El País", "Internacional", "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/economia/portada"),
+    ("DW", "Internacional", "https://rss.dw.com/xml/rss-sp-eco"),
 ]
 MERCADO = re.compile(
     r"bolsa|bvl|acci[oó]n|mercado|d[oó]lar|tipo de cambio|cobre|oro|bcrp|tasa|inflaci|inversi|bono|afp|"
