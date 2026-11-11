@@ -36,7 +36,7 @@ La persona registra lo que debe y lo que tiene. Futuro Yo calcula su situación 
 
 ## 6. Demo
 
-**URL pública:** [COMPLETAR: enlace de Streamlit Community Cloud]
+**URL pública:** https://futuroyo.streamlit.app/
 
 **Video de respaldo (60 a 90 s):** [COMPLETAR: enlace]
 

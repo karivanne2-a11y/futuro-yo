@@ -6,9 +6,9 @@ Complétalo y publícalo en https://github.com/d2cml-ai/Data-Science-Python/issu
 
 **Startup y one-liner:** Futuro Yo. Ordena tus deudas, ahorros, inversiones y AFP en un solo lugar, y te muestra con cifras adónde te llevan a los 65 años.
 
-**Link del demo:** [COMPLETAR]
+**Link del demo:** https://futuroyo.streamlit.app/
 
-**Link del repo:** [COMPLETAR]
+**Link del repo:** https://github.com/karivanne2-a11y/futuro-yo
 
 **Herramientas del curso que usa:** APIs (BCRP), dashboard interactivo y despliegue en Streamlit, LLM con salida estructurada.
 
